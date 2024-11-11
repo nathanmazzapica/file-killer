@@ -1,3 +1,4 @@
+from config import SAFE_MODE
 import math
 from enemy import Enemy
 
@@ -18,10 +19,17 @@ angle = 0
 offset = 0
 
 enemies = []
-for file in os.listdir("files"):
-	testEnemy = Enemy(file, 15, 300 + offset, 300 + offset * 3, 20)
+radius = 200
+angle = 0
+files = os.listdir("files")
+for i in range(len(files)):
+	angle += (2 * math.pi) / len(files)
+
+	pos_x = game_center.x + radius * math.cos(angle)
+	pos_y = game_center.y + radius * math.sin(angle)
+
+	testEnemy = Enemy(files[i], 15, pos_x, pos_y, 20)
 	testEnemy.draw(screen)
-	offset += 30
 	enemies.append(testEnemy)
 
 while running:
@@ -31,14 +39,22 @@ while running:
 
 	background = pygame.Surface(screen.get_size())
 	background = background.convert()
-	background.fill((170,238,187))
+
+	color = (170,238,187)
+	warning_text = "SAFE MODE ! FILES WILL NOT BE DELETED"
+
+	if not SAFE_MODE:
+		color = (170, 20, 20)
+		warning_text = "DANGER MODE ! FILES WILL BE PERMANENTLY DELETED"
+
+	background.fill(color)
 	screen.blit(background, (0,0))
 
 	for enemy in enemies:
 		enemy.draw(screen)
 
 		if enemy.check_collision(player):
-			enemy.die()
+			enemy.die(SAFE_MODE)
 
 
 	for e in enemies:
@@ -48,6 +64,10 @@ while running:
 	player.draw(screen)
 	keys = pygame.key.get_pressed()
 
+	font = pygame.font.Font(None, 64)
+	text = font.render(warning_text, True, (10, 10, 10))
+	text_pos = text.get_rect(x = 0, y = 640 )
+	screen.blit(text, text_pos)
 
   # TODO: normalize this
 	if keys[pygame.K_w]:
