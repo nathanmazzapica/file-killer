@@ -1,1 +1,2 @@
-SAFE_MODE = True
+SAFE_MODE = False
+WINDOW_SIZE = (1920, 1080)
